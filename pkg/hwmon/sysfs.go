@@ -1,4 +1,3 @@
-// Package hwmon provides discovery and reading capabilities for Linux sysfs thermal metrics.
 package hwmon
 
 import (
@@ -11,13 +10,32 @@ import (
 	"strings"
 )
 
-type SencorTarget struct {
+// SysfsSensor represents a thermal sensor accessed via Linux sysfs interface (/sys/class/hwmon).
+type SysfsSensor struct {
+	Path string
+}
+
+// Read reads the raw temperature value from sysfs file and returns it in Celsius.
+func (s SysfsSensor) Read() (int, error) {
+	temp, err := readTemp(s.Path)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get temperature from sysfs: %w", err)
+	}
+	return temp, nil
+}
+
+// Close implements ThermalReader interface for SysfsSensor (no-op for sysfs).
+func (s SysfsSensor) Close() error {
+	return nil
+}
+
+type sensorTarget struct {
 	Drivers []string
 	Labels  []string
 }
 
 var (
-	CPUTatger = SencorTarget{
+	cpuTarget = sensorTarget{
 		Drivers: []string{
 			"k10temp", "coretemp", "zenpower", "amd_energy",
 		},
@@ -25,7 +43,7 @@ var (
 			"Tctl", "Tdie", "Package id 0", "Package id 1",
 		},
 	}
-	GPUTarget = SencorTarget{
+	gpuTarget = sensorTarget{
 		Drivers: []string{
 			"amdgpu", "nouveau", "nvidia", "i915", "xe",
 		},
@@ -35,10 +53,7 @@ var (
 	}
 )
 
-// FindSensorPath scans /sys/class/hwmon and returns the absolute sysfs path (string)
-// to a matching thermal sensor input file based on the provided SensorTarget rules.
-// It returns a non-nil error if no matching driver or sensor file is found.
-func FindSensorPath(target SencorTarget) (string, error) {
+func findSensorPath(target sensorTarget) (string, error) {
 	paths, err := filepath.Glob("/sys/class/hwmon/hwmon*/name")
 	if err != nil {
 		return "", fmt.Errorf("failed to glob hwmon: %w", err)
@@ -85,10 +100,7 @@ func findPathByLabels(dir string, labels []string) (string, bool) {
 	return "", false
 }
 
-// ReadTemp accepts an absolute sysfs file path (string) to a thermal sensor and returns
-// the current temperature converted to integer degrees Celsius (int).
-// It returns a non-nil error if reading the file fails or if parsing fails.
-func ReadTemp(path string) (int, error) {
+func readTemp(path string) (int, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read temp file: %w", err)
