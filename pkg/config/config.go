@@ -38,6 +38,7 @@ func DefaultPath() (string, error) {
 
 // Load reads and parses a TOML configuration file from the given file path.
 func Load(path string) (Config, error) {
+	//nolint:gosec // Config path is explicitly determined by application logic
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return Config{}, fmt.Errorf("failed to read config file: %w", err)
