@@ -9,9 +9,18 @@ NC='\033[0m'
 
 echo -e "${BLUE}=== Installing ocyd (Ocypus Display Daemon) ===${NC}\n"
 
-if [ ! -f "./bin/ocyd" ]; then
+BIN_PATH=""
+if [ -f "./ocyd" ]; then
+  BIN_PATH="./ocyd"
+elif [ -f "./bin/ocyd" ]; then
+  BIN_PATH="./bin/ocyd"
+elif [ -f "../../Makefile" ] || [ -f "./Makefile" ]; then
   echo -e "${BLUE}[*] Executable binary not found. Running make build...${NC}"
   make build
+  BIN_PATH="./bin/ocyd"
+else
+  echo -e "${RED}[!] Error: Binary not found and Makefile is missing!${NC}"
+  exit 1
 fi
 
 DEVICES_DIR="./install/devices"
@@ -45,8 +54,8 @@ done
 DEV_PATH="$DEVICES_DIR/$selected_device"
 BASE_PATH="./install/base"
 
-echo -e "\n${BLUE}[*] Installing daemon binary to /usr/local/bin...${NC}"
-sudo install -Dm755 ./bin/ocyd /usr/local/bin/ocyd
+echo -e "\n${BLUE}[*] Installing daemon binary from $BIN_PATH to /usr/local/bin...${NC}"
+sudo install -Dm755 "$BIN_PATH" /usr/local/bin/ocyd
 
 if [ -f "$DEV_PATH/99-ocypus.rules" ]; then
   echo -e "${BLUE}[*] Installing udev rules...${NC}"
