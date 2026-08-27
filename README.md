@@ -11,7 +11,7 @@ Linux daemon for sending live CPU or GPU temperature to Ocypus cooler displays o
 
 ## Status
 
-ocyd is early alpha software (`v0.1.0-alpha`). Hardware support is still being expanded.
+ocyd is early alpha software. Hardware support is still being expanded.
 
 | Model                 | USB IDs         | Status                 |
 | --------------------- | --------------- | ---------------------- |
@@ -28,6 +28,20 @@ ocyd is early alpha software (`v0.1.0-alpha`). Hardware support is still being e
 
 ## Install
 
+### From a release archive
+
+Open the [Releases](https://github.com/Dilikel/ocyd/releases) page, download the latest source archive, extract it, and run the installer from the extracted directory:
+
+```bash
+tar -xzf ocyd-*.tar.gz
+cd ocyd-*
+./install.sh
+```
+
+The archive name may differ between releases. Use the archive and directory name shown on the Releases page.
+
+### From a Git checkout
+
 ```bash
 git clone https://github.com/Dilikel/ocyd.git
 cd ocyd
@@ -35,6 +49,16 @@ cd ocyd
 ```
 
 The installer builds the daemon, lets you choose a device profile, installs the binary and udev rules, creates `~/.config/ocyd/config.toml`, and enables the user service. It may ask for `sudo` while installing system files.
+
+### Uninstall
+
+To remove the installed daemon, user service, and udev rule, run `uninstall.sh` from the project or extracted archive directory:
+
+```bash
+./uninstall.sh
+```
+
+The script stops and disables the service, removes the binaries from `/usr/local/bin`, removes `/etc/udev/rules.d/99-ocypus.rules`, and reloads udev rules. It asks whether `~/.config/ocyd` should be deleted and requires `sudo` for system files.
 
 ## Configuration
 
@@ -54,12 +78,32 @@ To use another display, update the installed configuration and udev rule as desc
 
 ## Service and logs
 
+### Manual service control
+
+The daemon runs as a systemd user service:
+
 ```bash
+# Stop
+systemctl --user stop ocyd.service
+
+# Start
+systemctl --user start ocyd.service
+
+# Restart
+systemctl --user restart ocyd.service
+
+# Disable autostart
+systemctl --user disable ocyd.service
+
+# Show status
 systemctl --user status ocyd.service
+```
+
+```bash
 journalctl --user -u ocyd.service -f
 ```
 
-Stop or restart it with `systemctl --user stop ocyd.service` or `systemctl --user restart ocyd.service`.
+To enable autostart again, run `systemctl --user enable ocyd.service`.
 
 ## Testing your own cooler
 
