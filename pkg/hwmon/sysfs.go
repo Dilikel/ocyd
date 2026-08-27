@@ -59,6 +59,7 @@ func findSensorPath(target sensorTarget) (string, error) {
 		return "", fmt.Errorf("failed to glob hwmon: %w", err)
 	}
 	for _, path := range paths {
+		//nolint:gosec // Sysfs paths are safe hardware nodes scanned by internal logic
 		content, err := os.ReadFile(path)
 		if err != nil {
 			continue
@@ -85,6 +86,7 @@ func findPathByLabels(dir string, labels []string) (string, bool) {
 		return "", false
 	}
 	for _, path := range paths {
+		//nolint:gosec // Sysfs paths are safe hardware nodes scanned by internal logic
 		content, err := os.ReadFile(path)
 		if err != nil {
 			continue
@@ -101,6 +103,7 @@ func findPathByLabels(dir string, labels []string) (string, bool) {
 }
 
 func readTemp(path string) (int, error) {
+	//nolint:gosec // Sysfs paths are safe hardware nodes scanned by internal logic
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read temp file: %w", err)
