@@ -1,0 +1,11 @@
+[Unit]
+Description=Ocypus Display Thermal Daemon
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/local/bin/ocyd
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
