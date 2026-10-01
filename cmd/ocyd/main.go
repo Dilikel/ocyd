@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Vladimir Shiryaev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // Package main provides the executable entry point for the ocyd daemon.
 //
 // ocyd is a lightweight system daemon designed to fetch real-time CPU or GPU
@@ -68,13 +71,13 @@ func run(ctx context.Context) error {
 
 	var reader hwmon.ThermalReader
 	switch cfg.Display.Source {
-	case "cpu":
+	case "CPU":
 		r, err := hwmon.NewCPUReader()
 		if err != nil {
 			return fmt.Errorf("failed to initialize CPU thermal reader: %w", err)
 		}
 		reader = r
-	case "gpu":
+	case "GPU":
 		r, err := hwmon.NewGPUReader()
 		if err != nil {
 			return fmt.Errorf("failed to initialize GPU thermal reader: %w", err)

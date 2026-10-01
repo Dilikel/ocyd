@@ -1,5 +1,8 @@
+// Copyright (C) 2026 Vladimir Shiryaev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // Package ocypus provides a low-level driver for interacting with the Ocypus
-// CPU cooler display via USB HID.package ocypus
+// CPU cooler display via USB HID
 package ocypus
 
 import (
