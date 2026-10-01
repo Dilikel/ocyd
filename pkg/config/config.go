@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Vladimir Shiryaev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // Package config provides primitives for resolving paths and loading TOML configuration
 package config
 
@@ -48,4 +51,25 @@ func Load(path string) (Config, error) {
 		return Config{}, fmt.Errorf("failed to unmarshal toml config: %w", err)
 	}
 	return cfg, nil
+}
+
+// Save marshals the provided configuration into TOML format and saves it to a file.
+//
+// If the file at the specified path does not exist, it will be created with 0644
+// permissions (read/write for owner, read-only for others). If the file already
+// exists, it will be overwritten and truncated.
+//
+// It returns an error if the configuration fails to marshal or if the file write operation fails.
+func Save(cfg Config, path string) error {
+	data, err := toml.Marshal(cfg)
+	if err != nil {
+		return fmt.Errorf("failed to marshal toml config: %w", err)
+	}
+
+	err = os.WriteFile(path, data, 0o644)
+	if err != nil {
+		return fmt.Errorf("failed to write config: %w", err)
+	}
+
+	return nil
 }
