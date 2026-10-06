@@ -26,8 +26,8 @@ type DisplayConfig struct {
 
 // DeviceConfig holds USB identification parameters for the target HID display.
 type DeviceConfig struct {
-	VendorID  uint16 `toml:"vendor_id"`
-	ProductID uint16 `toml:"product_id"`
+	VendorID  string `toml:"vendor_id"`
+	ProductID string `toml:"product_id"`
 }
 
 // DefaultPath returns the standard user-level configuration path (~/.config/ocyd/config.toml).

@@ -24,23 +24,31 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/Dilikel/ocyd/pkg/config"
 )
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		os.Exit(1)
 	}
 	fmt.Println("Configuration updated successfully!")
 }
 
 func run() error {
-	unitFlag := flag.String("unit", "", "Temperature unit: C | F")
-	sourceFlag := flag.String("source", "", "Data source: CPU | GPU")
-	vendorFlag := flag.Int("vendor", 0, "USB Vendor ID (e.g. 6700)")
-	productFlag := flag.Int("product", 0, "USB Product ID (e.g. 17229)")
+	var (
+		unitFlag    string
+		sourceFlag  string
+		vendorFlag  string
+		productFlag string
+	)
+
+	flag.StringVar(&unitFlag, "unit", "", "Temperature unit: C | F")
+	flag.StringVar(&sourceFlag, "source", "", "Data source: CPU | GPU")
+	flag.StringVar(&vendorFlag, "vendor", "", "USB Vendor ID as 16-bit integer: hex ('0x1a2c', '1a2c') or decimal ('6700')")
+	flag.StringVar(&productFlag, "product", "", "USB Product ID as 16-bit integer: hex ('0x434d', '434d') or decimal ('17229')")
 
 	flag.Parse()
 
@@ -54,34 +62,42 @@ func run() error {
 		return fmt.Errorf("failed to get config value: %w", err)
 	}
 
-	if *unitFlag != "" {
-		switch *unitFlag {
+	if unitFlag != "" {
+		switch unitFlag {
 		case "C":
 			cfg.Display.Unit = "C"
 		case "F":
 			cfg.Display.Unit = "F"
 		default:
-			return fmt.Errorf("invalid unit flag '%s'. Expected 'C' or 'F'", *unitFlag)
+			return fmt.Errorf("invalid unit flag '%s'. Expected 'C' or 'F'", unitFlag)
 		}
 	}
 
-	if *sourceFlag != "" {
-		switch *sourceFlag {
+	if sourceFlag != "" {
+		switch sourceFlag {
 		case "CPU":
 			cfg.Display.Source = "CPU"
 		case "GPU":
 			cfg.Display.Source = "GPU"
 		default:
-			return fmt.Errorf("invalid source '%s'. Expected 'CPU' or 'GPU'", *sourceFlag)
+			return fmt.Errorf("invalid source '%s'. Expected 'CPU' or 'GPU'", sourceFlag)
 		}
 	}
 
-	if *vendorFlag != 0 {
-		cfg.Device.VendorID = uint16(*vendorFlag)
+	if vendorFlag != "" {
+		_, err := strconv.ParseUint(vendorFlag, 0, 16)
+		if err != nil {
+			return fmt.Errorf("invalid device vendor_id %q: must be a valid 16-bit integer (e.g. hex '0x1a2c'/'1a2c' or decimal '6700'): %w", vendorFlag, err)
+		}
+		cfg.Device.VendorID = vendorFlag
 	}
 
-	if *productFlag != 0 {
-		cfg.Device.ProductID = uint16(*productFlag)
+	if productFlag != "" {
+		_, err := strconv.ParseUint(productFlag, 0, 16)
+		if err != nil {
+			return fmt.Errorf("invalid device product_id %q: must be a valid 16-bit integer (e.g. hex '0x434d'/'434d' or decimal '17229'): %w", productFlag, err)
+		}
+		cfg.Device.ProductID = productFlag
 	}
 
 	err = config.Save(cfg, cfgPath)

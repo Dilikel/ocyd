@@ -25,6 +25,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -65,8 +66,8 @@ func run(ctx context.Context) error {
 		slog.String("path", cfgPath),
 		slog.String("source", cfg.Display.Source),
 		slog.String("unit", cfg.Display.Unit),
-		slog.String("vendor_id", fmt.Sprintf("0x%04x", cfg.Device.VendorID)),
-		slog.String("product_id", fmt.Sprintf("0x%04x", cfg.Device.ProductID)),
+		slog.String("vendor_id", cfg.Device.VendorID),
+		slog.String("product_id", cfg.Device.ProductID),
 	)
 
 	var reader hwmon.ThermalReader
@@ -103,7 +104,17 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("invalid display unit %q: must be 'C' or 'F'", cfg.Display.Unit)
 	}
 
-	display, err := ocypus.NewDisplay(cfg.Device.VendorID, cfg.Device.ProductID)
+	vid, err := strconv.ParseUint(cfg.Device.VendorID, 0, 16)
+	if err != nil {
+		return fmt.Errorf("invalid device vendor_id %q: must be a valid 16-bit integer (e.g. hex '0x1a2c'/'1a2c' or decimal '6700'): %w", cfg.Device.VendorID, err)
+	}
+
+	pid, err := strconv.ParseUint(cfg.Device.ProductID, 0, 16)
+	if err != nil {
+		return fmt.Errorf("invalid device product_id %q: must be a valid 16-bit integer (e.g. hex '0x434d'/'434d' or decimal '17229'): %w", cfg.Device.ProductID, err)
+	}
+
+	display, err := ocypus.NewDisplay(uint16(vid), uint16(pid))
 	if err != nil {
 		return fmt.Errorf("failed to initialize display: %w", err)
 	}
