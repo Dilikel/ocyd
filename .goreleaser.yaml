@@ -38,11 +38,15 @@ archives:
   - id: default
     formats:
       - tar.gz
+    wrap_in_directory: true
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - README.md
       - README.ru.md
       - LICENSE
+      - install.sh
+      - uninstall.sh
+      - packaging/**/*
 
 release:
   prerelease: auto
