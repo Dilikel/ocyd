@@ -47,8 +47,8 @@ func run() error {
 
 	flag.StringVar(&unitFlag, "unit", "", "Temperature unit: C | F")
 	flag.StringVar(&sourceFlag, "source", "", "Data source: CPU | GPU")
-	flag.StringVar(&vendorFlag, "vendor", "", "USB Vendor ID as 16-bit integer: hex ('0x1a2c', '1a2c') or decimal ('6700')")
-	flag.StringVar(&productFlag, "product", "", "USB Product ID as 16-bit integer: hex ('0x434d', '434d') or decimal ('17229')")
+	flag.StringVar(&vendorFlag, "vendor", "", "USB Vendor ID as 16-bit integer: hex ('0x1a2c') or decimal ('6700')")
+	flag.StringVar(&productFlag, "product", "", "USB Product ID as 16-bit integer: hex ('0x434d') or decimal ('17229')")
 
 	flag.Parse()
 
