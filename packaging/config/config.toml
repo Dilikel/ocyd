@@ -1,0 +1,7 @@
+[display]
+unit = 'C'
+source = 'CPU'
+
+[device]
+vendor_id = '0x1a2c'
+product_id = '0x434d'
