@@ -10,8 +10,9 @@ MAIN_CLI=cmd/ocydctl/main.go
 
 all: fmt vet lint test build
 
-build: vet fmt 
+build: vet fmt
 	go build -o $(BUILD_DIR)/$(BINARY_NAME) $(MAIN_DAEMON)
+	go build -o $(BUILD_DIR)/$(CLI_NAME) $(MAIN_CLI)
 
 run: build 
 	./bin/ocyd
@@ -30,5 +31,3 @@ test:
 
 clean:
 	rm -rf $(BUILD_DIR)
-
-

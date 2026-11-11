@@ -20,8 +20,25 @@ builds:
     ldflags:
       - -s -w -X main.Version={{.Version}}
 
+  - id: ocydctl
+    main: ./cmd/ocydctl
+    binary: ocydctl
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.Version={{.Version}}
+
 archives:
-  - format: tar.gz
+  - id: default
+    formats:
+      - tar.gz
+    wrap_in_directory: true
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - README.md
@@ -29,7 +46,7 @@ archives:
       - LICENSE
       - install.sh
       - uninstall.sh
-      - install/**/*
+      - packaging/**/*
 
 release:
   prerelease: auto

@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Vladimir Shiryaev
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // Package hwmon provides discovery and reading capabilities for Linux sysfs thermal metrics and NVIDIA NVML.
 package hwmon
 
